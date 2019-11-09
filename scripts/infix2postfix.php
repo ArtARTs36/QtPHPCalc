@@ -23,7 +23,9 @@ class Infix2Postfix
 
         $tokens = array_map(array('OperatorFactory', 'getOperator'), $tokens[0]);
 
-        foreach ($tokens as $token) {
+        for ($i = 0; $i < count($tokens); $i++) {
+            $token = $tokens[$i];
+        //foreach ($tokens as $token) {
             if (is_numeric($token)) {
                 $this->postfix[] = $token;
             } elseif ($token == '(') {
@@ -45,6 +47,19 @@ class Infix2Postfix
                     isset($this->stack[0]) && !empty($this->stack[0]) &&
                     $this->stack[0] instanceof AbstractOperator
                 ) {
+
+                    //
+                    if (
+                        $token instanceof SubOperator &&
+                        //$tokens[$i - 1] instanceof PowOperator &&
+                        is_numeric($tokens[$i + 1])
+                    ) {
+                        $tokens[$i + 1] = $tokens[$i + 1] * -1;
+
+                        continue;
+                    }
+                    //
+
                     foreach ($this->stack[0] as $st) {
                         if (
                             $token->comparePriority(@$st) == 1 &&
